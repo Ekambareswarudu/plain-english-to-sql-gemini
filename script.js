@@ -74,11 +74,11 @@ function setLoading() {
 }
 
 function parseAndDisplay(text) {
-  // Reset outputs
-  document.getElementById("sqlOutput").textContent = "";
+  document.getElementById("sqlOutput").textContent = text;
   document.getElementById("explanationOutput").textContent = "";
   document.getElementById("optimizationOutput").textContent = "";
   document.getElementById("assumptionsOutput").textContent = "";
+}
 
   // Fallback: show full response if parsing fails
   if (!text || text.length < 10) {
