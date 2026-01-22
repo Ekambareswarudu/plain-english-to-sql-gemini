@@ -1,6 +1,8 @@
 const API_KEY = "AIzaSyDy9hcKbXgUAw9SUCVjN2gZK5G039D6zNw";
+const API_KEY = "PASTE_YOUR_GEMINI_API_KEY_HERE";
+
 const API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" +
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
   API_KEY;
 
 const SCHEMA = `
@@ -18,7 +20,10 @@ async function generateSQL() {
     return;
   }
 
-  setLoading();
+  document.getElementById("sqlOutput").textContent = "Generating with Gemini...";
+  document.getElementById("explanationOutput").textContent = "";
+  document.getElementById("optimizationOutput").textContent = "";
+  document.getElementById("assumptionsOutput").textContent = "";
 
   const prompt = `
 You are a senior MySQL database engineer.
@@ -29,12 +34,15 @@ ${SCHEMA}
 User Request:
 "${userInput}"
 
-Respond exactly in this format:
+Respond in plain text using EXACT section headers:
 
 SQL:
 Explanation:
 Optimizations:
 Assumptions:
+
+Do NOT use markdown.
+Do NOT rename headers.
 `;
 
   try {
@@ -55,58 +63,17 @@ Assumptions:
     const data = await response.json();
 
     const text =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No response from Gemini";
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No response from Gemini.";
 
-    parseAndDisplay(text);
+    // SHOW FULL GEMINI OUTPUT (NO PARSING RISK)
+    document.getElementById("sqlOutput").textContent = text;
   } catch (error) {
     document.getElementById("sqlOutput").textContent =
-      "Error calling Gemini API";
+      "Error calling Gemini API. Check console.";
     console.error(error);
   }
 }
-
-function setLoading() {
-  document.getElementById("sqlOutput").textContent = "Generating...";
-  document.getElementById("explanationOutput").textContent = "";
-  document.getElementById("optimizationOutput").textContent = "";
-  document.getElementById("assumptionsOutput").textContent = "";
-}
-
-function parseAndDisplay(text) {
-  document.getElementById("sqlOutput").textContent = text;
-  document.getElementById("explanationOutput").textContent = "";
-  document.getElementById("optimizationOutput").textContent = "";
-  document.getElementById("assumptionsOutput").textContent = "";
-}
-
-  // Fallback: show full response if parsing fails
-  if (!text || text.length < 10) {
-    document.getElementById("sqlOutput").textContent =
-      "Empty response from Gemini";
-    return;
-  }
-
-  // Normalize text
-  const normalized = text.replace(/\*\*/g, "");
-
-  const extract = (label) => {
-    const regex = new RegExp(
-      `${label}\\s*[:\\-]?([\\s\\S]*?)(?=\\n[A-Z][a-zA-Z ]+\\s*[:\\-]|$)`,
-      "i"
-    );
-    const match = normalized.match(regex);
-    return match ? match[1].trim() : "Not provided";
-  };
-
-  document.getElementById("sqlOutput").textContent =
-    extract("SQL");
-
-  document.getElementById("explanationOutput").textContent =
-    extract("Explanation");
-
-  document.getElementById("optimizationOutput").textContent =
-    extract("Optimizations|Optimization");
 
   document.getElementById("assumptionsOutput").textContent =
     extract("Assumptions|Assumption");
