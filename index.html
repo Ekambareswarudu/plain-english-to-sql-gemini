@@ -1,18 +1,40 @@
-<h2>Database Schema</h2>
-<pre id="schema">...</pre>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Plain English to SQL — Gemini</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
-<textarea id="userInput" placeholder="Enter your query in plain English"></textarea>
-<button onclick="generateSQL()">Generate</button>
+  <h1>Plain English → SQL Generator</h1>
 
-<h3>SQL</h3>
-<pre id="sqlOutput"></pre>
+  <h2>Database Schema (Fixed)</h2>
+  <pre id="schema">
+users(id, name, email, created_at)
+orders(id, user_id, amount, status, created_at)
+products(id, name, price, category)
+order_items(order_id, product_id, quantity)
+  </pre>
 
-<h3>Explanation</h3>
-<pre id="explanationOutput"></pre>
+  <h2>Enter your request</h2>
+  <textarea id="userInput" placeholder="e.g. Show total revenue per product for last 3 months"></textarea>
 
-<h3>Optimizations</h3>
-<pre id="optimizationOutput"></pre>
+  <br />
+  <button onclick="generateSQL()">Generate SQL</button>
 
-<h3>Assumptions</h3>
-<pre id="assumptionsOutput"></pre>
+  <h2>SQL</h2>
+  <pre id="sqlOutput"></pre>
 
+  <h2>Explanation</h2>
+  <pre id="explanationOutput"></pre>
+
+  <h2>Optimizations</h2>
+  <pre id="optimizationOutput"></pre>
+
+  <h2>Assumptions</h2>
+  <pre id="assumptionsOutput"></pre>
+
+  <script src="script.js"></script>
+</body>
+</html>
