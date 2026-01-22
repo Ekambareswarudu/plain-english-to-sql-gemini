@@ -74,29 +74,41 @@ function setLoading() {
 }
 
 function parseAndDisplay(text) {
-  const sections = {
-    SQL: "",
-    Explanation: "",
-    Optimizations: "",
-    Assumptions: "",
+  // Reset outputs
+  document.getElementById("sqlOutput").textContent = "";
+  document.getElementById("explanationOutput").textContent = "";
+  document.getElementById("optimizationOutput").textContent = "";
+  document.getElementById("assumptionsOutput").textContent = "";
+
+  // Fallback: show full response if parsing fails
+  if (!text || text.length < 10) {
+    document.getElementById("sqlOutput").textContent =
+      "Empty response from Gemini";
+    return;
+  }
+
+  // Normalize text
+  const normalized = text.replace(/\*\*/g, "");
+
+  const extract = (label) => {
+    const regex = new RegExp(
+      `${label}\\s*[:\\-]?([\\s\\S]*?)(?=\\n[A-Z][a-zA-Z ]+\\s*[:\\-]|$)`,
+      "i"
+    );
+    const match = normalized.match(regex);
+    return match ? match[1].trim() : "Not provided";
   };
 
-  let current = null;
+  document.getElementById("sqlOutput").textContent =
+    extract("SQL");
 
-  text.split("\n").forEach((line) => {
-    const trimmed = line.trim();
-    if (sections.hasOwnProperty(trimmed.replace(":", ""))) {
-      current = trimmed.replace(":", "");
-    } else if (current) {
-      sections[current] += line + "\n";
-    }
-  });
-
-  document.getElementById("sqlOutput").textContent = sections.SQL.trim();
   document.getElementById("explanationOutput").textContent =
-    sections.Explanation.trim();
+    extract("Explanation");
+
   document.getElementById("optimizationOutput").textContent =
-    sections.Optimizations.trim();
+    extract("Optimizations|Optimization");
+
   document.getElementById("assumptionsOutput").textContent =
-    sections.Assumptions.trim();
+    extract("Assumptions|Assumption");
 }
+
